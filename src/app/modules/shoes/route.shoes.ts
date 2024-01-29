@@ -4,29 +4,31 @@ import {   ShoesValidation } from './validation.shoes';
 import { shoesControllers } from './controller.shoes';
 import auth from '../../middlewares/auth';
 import { upload } from '../../utils/sendImageToCloudinary';
+import { USER_ROLE } from '../user/constant.user';
 
 const router = express.Router();
 
 router.post(
   '/create-shoes',
-  // auth('admin'),
+  auth('admin'),
   upload.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     try {
       req.body = JSON.parse(req.body.data);
     } catch (error) {
-      console.error('Error parsing JSON:', error);
-      // Handle the error appropriately, e.g., send a response with an error status
-      res.status(400).json({ error: 'Invalid JSON data' });
+     res.status(400).json({ error: 'Invalid JSON data' });
       return;
     }
     next();
   },
-  // validateRequest(ShoesValidation.CreateShoesValidationSchema),
+  validateRequest(ShoesValidation.CreateShoesValidationSchema),
   shoesControllers.createShoes,
 );
 
-router.get('/', auth('admin'), shoesControllers.getAllCourse);
+router.get('/',
+        auth(USER_ROLE.admin),
+        shoesControllers.getAllShoes
+  );
 router.get('/best', shoesControllers.findBestCourse);
 
 router.put('/:courseId', auth('admin'), shoesControllers.updateCourse);

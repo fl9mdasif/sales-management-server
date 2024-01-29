@@ -31,8 +31,8 @@ export const generateShoesId = async () => {
 
     return formattedId;
   } catch (error) {
-    console.error('Error generating shoes ID:', error);
-    throw error;  
+    // console.error('Error generating shoes ID:', error);
+    throw new Error(error);  
   }
 };
 

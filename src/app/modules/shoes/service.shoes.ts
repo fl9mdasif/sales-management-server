@@ -4,11 +4,7 @@ import {   Shoes } from './model.shoes';
 import AppError from '../../errors/AppErrors';
 import httpStatus from 'http-status'; 
 import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
-import { generateShoesId } from './utils.shoes';
  
-// import { Review } from '../review/model.review';
-// import { JwtPayload } from 'jsonwebtoken';
-
 // create shoes
 const createShoes = async ( 
   file: any,
@@ -83,8 +79,8 @@ const getAllCourses = async (payload: Record<string, unknown>) => {
     // calculate skip value for pagination
     const skip = (parseInt(String(page)) - 1) * parseInt(String(limit));
 
-    const result = await Course.find(filter)
-      .populate('createdBy', '-password -createdAt -updatedAt')
+    const result = await Shoes.find(filter)
+      // .populate('createdBy', '-password -createdAt -updatedAt')
       .sort(sort)
       .skip(skip)
       .limit(parseInt(String(limit)));
@@ -100,7 +96,7 @@ const getAllCourses = async (payload: Record<string, unknown>) => {
 const getSingleCourseWithReview = async (id: string) => {
   // console.log(id);
 
-  const singleCourse = await Course.findById(id)
+  const singleCourse = await Shoes.findById(id)
     .populate('createdBy', '-password -createdAt -updatedAt -__v')
     .lean();
 
@@ -122,7 +118,7 @@ const getSingleCourseWithReview = async (id: string) => {
 const findBestCourse = async () => {
   // console.log(id);
 
-  const bestCourse = await Course.aggregate([
+  const bestCourse = await Shoes.aggregate([
     {
       $lookup: {
         from: 'reviews',
@@ -153,7 +149,7 @@ const findBestCourse = async () => {
     },
   ]);
 
-  if (bestCourse.length > 0) {
+  if (bestShoes.length > 0) {
     const result = bestCourse[0];
     return result;
   }
@@ -166,7 +162,7 @@ const updateCourse = async (id: string, updatedData: Partial<TShoes>) => {
   // console.log(courseRemainingData);
 
   // Basic update primitive fields
-  const updatedBasicCourseInfo = await Course.findOneAndUpdate(
+  const updatedBasicCourseInfo = await Shoes.findOneAndUpdate(
     { _id: id },
 
     { $set: courseRemainingData },
@@ -183,7 +179,7 @@ const updateCourse = async (id: string, updatedData: Partial<TShoes>) => {
 
   // Update non-primitive fields if available
   if (details) {
-    const updatedDetails = await Course.findOneAndUpdate(
+    const updatedDetails = await Shoes.findOneAndUpdate(
       { _id: id },
       {
         $set: {
@@ -212,7 +208,7 @@ const updateCourse = async (id: string, updatedData: Partial<TShoes>) => {
       .map((el) => el.name);
 
     // Remove deleted Tags
-    const deletedCourseTags = await Course.findByIdAndUpdate(
+    const deletedCourseTags = await Shoes.findByIdAndUpdate(
       id,
       {
         $pull: {
@@ -231,7 +227,7 @@ const updateCourse = async (id: string, updatedData: Partial<TShoes>) => {
 
     // console.log(newPreTags);
 
-    const newTags = await Course.findByIdAndUpdate(
+    const newTags = await Shoes.findByIdAndUpdate(
       id,
       {
         $addToSet: { tags: { $each: newPreTags } },
@@ -252,7 +248,7 @@ const updateCourse = async (id: string, updatedData: Partial<TShoes>) => {
     }
   }
   // result
-  const result = await Course.findById(id).populate('createdBy');
+  const result = await Shoes.findById(id).populate('createdBy');
   return result;
 };
 

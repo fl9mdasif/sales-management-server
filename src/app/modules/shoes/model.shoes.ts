@@ -19,6 +19,8 @@ const shoesSchema = new Schema<TShoes>({
  
   productDescription: { type: String },
   coverPhoto : { type: String  },
-})
+}, {
+  timestamps: true, // gives create update time
+},)
 
 export const Shoes = model<TShoes>('Shoes', shoesSchema);

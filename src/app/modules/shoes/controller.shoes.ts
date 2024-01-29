@@ -25,7 +25,7 @@ const createShoes: RequestHandler = async (req, res ) => {
 
 
 // get all course
-const getAllCourse = catchAsync(async (req, res) => {
+const getAllShoes = catchAsync(async (req, res) => {
   const result = await ShoesServices.getAllCourses(req.query);
 
   // Get the total number of documents
@@ -51,7 +51,7 @@ const getAllCourse = catchAsync(async (req, res) => {
       total: Number(total),
       // total: 0,
     },
-    message: 'Course retrieved successfully',
+    message: 'Shoes retrieved successfully',
     data: result,
   });
 });
@@ -98,7 +98,7 @@ const updateCourse = catchAsync(async (req, res) => {
 
 export const shoesControllers = {
   createShoes,
-  getAllCourse,
+  getAllShoes,
   getSingleCourseWithReview,
   findBestCourse,
   updateCourse,
