@@ -1,8 +1,10 @@
 export type TShoes = {
+  // id?:string;
   productName: string;
-  // category: string;
   price: number;
   quantity: number;
   productDescription: string;
-  uploadDate: string;
+  coverPhoto : string | undefined;
+  // category: string;
+ 
 };

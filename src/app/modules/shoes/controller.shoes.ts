@@ -1,25 +1,32 @@
 import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
-import { courseServices } from './service.course';
-import { response } from '../../utils/sendResponse';
-import { Course } from './model.course';
+import { ShoesServices } from './service.shoes';
+import { response } from '../../utils/sendResponse'; 
+import { RequestHandler } from 'express';
+import { Shoes } from './model.shoes';
 
 // create course
-const createCourse = catchAsync(async (req, res) => {
-  // console.log(req.user);
-  const result = await courseServices.createCourse(req.user, req.body);
+const createShoes: RequestHandler = async (req, res ) => {
 
-  response.createSendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Course created successfully',
-    data: result,
-  });
-});
+    const result = await ShoesServices.createShoes(
+      req.file,
+      req.body
+   
+    );
+
+    response.createSendResponse (res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Product created Successfully',
+      data: result,
+    });
+  
+};
+
 
 // get all course
 const getAllCourse = catchAsync(async (req, res) => {
-  const result = await courseServices.getAllCourses(req.query);
+  const result = await ShoesServices.getAllCourses(req.query);
 
   // Get the total number of documents
   let total = 0;
@@ -29,7 +36,7 @@ const getAllCourse = catchAsync(async (req, res) => {
 
   // show total if limit query not used
   if (!req.query) {
-    const res = await Course.find();
+    const res = await Shoes.find();
     total = res.length;
   } else {
     total = result.length;
@@ -54,7 +61,7 @@ const getSingleCourseWithReview = catchAsync(async (req, res) => {
   const { courseId } = req.params;
   // console.log({ courseId });
 
-  const course = await courseServices.getSingleCourseWithReview(courseId);
+  const course = await ShoesServices.getSingleCourseWithReview(courseId);
   response.createSendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -65,7 +72,7 @@ const getSingleCourseWithReview = catchAsync(async (req, res) => {
 
 // findBestCourse
 const findBestCourse = catchAsync(async (req, res) => {
-  const course = await courseServices.findBestCourse();
+  const course = await ShoesServices.findBestCourse();
   response.createSendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -79,7 +86,7 @@ const updateCourse = catchAsync(async (req, res) => {
   const { courseId } = req.params;
   const updatedData = req.body;
 
-  const result = await courseServices.updateCourse(courseId, updatedData);
+  const result = await ShoesServices.updateCourse(courseId, updatedData);
 
   response.createSendResponse(res, {
     statusCode: httpStatus.OK,
@@ -89,8 +96,8 @@ const updateCourse = catchAsync(async (req, res) => {
   });
 });
 
-export const courseControllers = {
-  createCourse,
+export const shoesControllers = {
+  createShoes,
   getAllCourse,
   getSingleCourseWithReview,
   findBestCourse,

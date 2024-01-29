@@ -1,24 +1,37 @@
-import { TCourse } from './interface.course';
-import { Course } from './model.course';
-import { Review } from '../review/model.review';
-import AppError from '../../errors/AppError';
-import httpStatus from 'http-status';
-import { User } from '../user/mode.user';
-import { JwtPayload } from 'jsonwebtoken';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {TShoes } from './interface.shoes';
+import {   Shoes } from './model.shoes';
+import AppError from '../../errors/AppErrors';
+import httpStatus from 'http-status'; 
+import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
+import { generateShoesId } from './utils.shoes';
+ 
+// import { Review } from '../review/model.review';
+// import { JwtPayload } from 'jsonwebtoken';
 
-// create course
-const createCourse = async (whichUser: JwtPayload, payload: TCourse) => {
-  const user = await User.isUserExists(whichUser.username);
-  const userId = user?._id;
+// create shoes
+const createShoes = async ( 
+  file: any,
+  shoesData: TShoes,
+) => {
+    
+    const imageName = `${shoesData?.productName}`;
+    const path = file?.path;
 
-  const newCourse = {
-    ...payload,
-    createdBy: userId,
-  };
-
-  const result = await Course.create(newCourse);
-
-  return result;
+    // send Image to cloudinary
+    const { secure_url } = (await sendImageToCloudinary(imageName, path)) as {
+      secure_url: string;
+    };
+  
+    const newShoes = {
+      ...shoesData,
+      coverPhoto :secure_url
+    }
+   
+    const result = await Shoes.create(newShoes);
+ 
+    return result;
+   
 };
 
 // get all course
@@ -147,7 +160,7 @@ const findBestCourse = async () => {
 };
 
 // update course
-const updateCourse = async (id: string, updatedData: Partial<TCourse>) => {
+const updateCourse = async (id: string, updatedData: Partial<TShoes>) => {
   const { tags, details, ...courseRemainingData } = updatedData;
 
   // console.log(courseRemainingData);
@@ -243,8 +256,8 @@ const updateCourse = async (id: string, updatedData: Partial<TCourse>) => {
   return result;
 };
 
-export const courseServices = {
-  createCourse,
+export const ShoesServices = {
+  createShoes,
   getAllCourses,
   getSingleCourseWithReview,
   findBestCourse,
