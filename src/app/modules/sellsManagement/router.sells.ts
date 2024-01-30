@@ -17,7 +17,7 @@ router.post(
 router.get(
   '/',
   // auth(USER_ROLE.admin),
-  shoesControllers.getAllShoes,
+  sellsController.getAllOrder,
 );
 // get single
 router.get('/:shoeId', shoesControllers.getSingleShoe);

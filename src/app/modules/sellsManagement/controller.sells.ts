@@ -1,10 +1,9 @@
 import { RequestHandler } from 'express';
 import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
-import { ShoesServices } from '../shoes/service.shoes';
 import { response } from '../../utils/sendResponse';
-import { Shoes } from '../shoes/model.shoes';
 import { sellsServices } from './service.sells';
+import { Sells } from './model.sells';
 
 // create course
 const createOrder: RequestHandler = async (req, res) => {
@@ -21,31 +20,14 @@ const createOrder: RequestHandler = async (req, res) => {
 
 // get all course
 const getAllOrder = catchAsync(async (req, res) => {
-  const result = await ShoesServices.getAllShoes(req.query);
+  const timeInterval = req.query.history;
+  //   console.log('c', timeInterval);
+  const result = await sellsServices.getSalesHistory(timeInterval);
 
-  // Get the total number of documents
-  let total = 0;
-
-  const page = req.query.page;
-  const limit = req.query.limit;
-
-  // show total if limit query not used
-  if (!req.query) {
-    const res = await Shoes.find();
-    total = res.length;
-  } else {
-    total = result.length;
-  }
-
-  response.getSendResponse(res, {
+  response.createSendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    meta: {
-      page: Number(page ? page : 1),
-      limit: Number(limit ? limit : 10),
-      total: Number(total),
-      // total: 0,
-    },
+
     message: 'Shoes retrieved successfully',
     data: result,
   });
