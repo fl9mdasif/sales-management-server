@@ -30,11 +30,19 @@ router.get(
   // auth(USER_ROLE.admin),
   shoesControllers.getAllShoes,
 );
-
+// get single
+router.get('/:shoeId', shoesControllers.getSingleShoe);
+// delete
 router.delete('/:shoeId', shoesControllers.deleteShoe);
+
 router.get('/best', shoesControllers.findBestCourse);
 
-router.put('/:courseId', auth('admin'), shoesControllers.updateCourse);
+router.put(
+  '/:shoeId',
+  //  auth('admin'),
+  validateRequest(ShoesValidation.UpdateShoesValidationSchema),
+  shoesControllers.updateShoe,
+);
 
 router.get('/:courseId/reviews', shoesControllers.getSingleCourseWithReview);
 router.get('/best', shoesControllers.findBestCourse);

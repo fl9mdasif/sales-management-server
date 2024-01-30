@@ -1,4 +1,4 @@
-import { Shoes } from "./model.shoes"; 
+import { Shoes } from './model.shoes';
 
 // Define a function to calculate the duration in weeks
 export const calculateDurationInWeeks = (
@@ -32,7 +32,6 @@ export const generateShoesId = async () => {
     return formattedId;
   } catch (error) {
     // console.error('Error generating shoes ID:', error);
-    throw new Error(error);  
+    throw new Error(error);
   }
 };
-

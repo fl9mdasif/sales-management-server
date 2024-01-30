@@ -48,8 +48,7 @@ const getAllShoes = catchAsync(async (req, res) => {
     data: result,
   });
 });
-
-// Get single course with reviews
+// delete shoe
 const deleteShoe = catchAsync(async (req, res) => {
   const { shoeId } = req.params;
   // console.log({ courseId });
@@ -61,6 +60,36 @@ const deleteShoe = catchAsync(async (req, res) => {
     success: true,
     message: 'Shoe deleted successfully',
     data: null,
+  });
+});
+
+// Get singleShoe
+const getSingleShoe = catchAsync(async (req, res) => {
+  const { shoeId } = req.params;
+
+  const result = await ShoesServices.getSingleShoe(shoeId);
+
+  response.createSendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Shoe retrieved successfully',
+    data: result,
+  });
+});
+
+// update course
+const updateShoe = catchAsync(async (req, res) => {
+  const { shoeId } = req.params;
+  const updatedData = req.body;
+
+  const result = await ShoesServices.updateShoe(shoeId, updatedData);
+  // console.log('res', result);
+
+  response.createSendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Course updated successfully',
+    data: result,
   });
 });
 
@@ -89,26 +118,12 @@ const findBestCourse = catchAsync(async (req, res) => {
   });
 });
 
-// update course
-const updateCourse = catchAsync(async (req, res) => {
-  const { courseId } = req.params;
-  const updatedData = req.body;
-
-  const result = await ShoesServices.updateCourse(courseId, updatedData);
-
-  response.createSendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Course updated successfully',
-    data: result,
-  });
-});
-
 export const shoesControllers = {
   createShoes,
   getAllShoes,
   deleteShoe,
+  getSingleShoe,
+  updateShoe,
   getSingleCourseWithReview,
   findBestCourse,
-  updateCourse,
 };

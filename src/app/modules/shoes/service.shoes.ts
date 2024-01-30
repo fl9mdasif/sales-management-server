@@ -112,20 +112,20 @@ const deleteShoe = async (id: string) => {
 };
 
 // update course
-const updateCourse = async (id: string, updatedData: Partial<TShoes>) => {
-  const { tags, details, ...courseRemainingData } = updatedData;
+const updateShoe = async (id: string, updatedData: Partial<TShoes>) => {
+  const { ...shoeData } = updatedData;
 
   // console.log(courseRemainingData);
 
   // Basic update primitive fields
-  const updatedBasicCourseInfo = await Shoes.findOneAndUpdate(
+  const updatedBasicShoeInfo = await Shoes.findOneAndUpdate(
     { _id: id },
 
-    { $set: courseRemainingData },
+    { $set: shoeData },
     { upsert: true, new: true, runValidators: true },
   );
 
-  if (!updatedBasicCourseInfo) {
+  if (!updatedBasicShoeInfo) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       'Failed to update basic course',
@@ -133,80 +133,11 @@ const updateCourse = async (id: string, updatedData: Partial<TShoes>) => {
     );
   }
 
-  // Update non-primitive fields if available
-  if (details) {
-    const updatedDetails = await Shoes.findOneAndUpdate(
-      { _id: id },
-      {
-        $set: {
-          'details.level': details.level,
-          'details.description': details.description,
-        },
-      },
-      { new: true, upsert: true, runValidators: true },
-    );
-
-    if (!updatedDetails) {
-      throw new AppError(
-        httpStatus.BAD_REQUEST,
-        'Failed to update details',
-        '',
-      );
-    }
-    return updatedDetails;
-  }
-
-  // dynamic Update preRequisiteCourse = tags
-  if (tags && tags.length > 0) {
-    // Filter out the deleted fields
-    const deletedTags = tags
-      .filter((el) => el.name && el.isDeleted)
-      .map((el) => el.name);
-
-    // Remove deleted Tags
-    const deletedCourseTags = await Shoes.findByIdAndUpdate(
-      id,
-      {
-        $pull: {
-          tags: { name: { $in: deletedTags } },
-        },
-      },
-      { new: true, runValidators: true },
-    );
-
-    if (!deletedCourseTags) {
-      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update course', '');
-    }
-
-    // Filter out the new course fields
-    const newPreTags = tags?.filter((el) => el.name && !el.isDeleted);
-
-    // console.log(newPreTags);
-
-    const newTags = await Shoes.findByIdAndUpdate(
-      id,
-      {
-        $addToSet: { tags: { $each: newPreTags } },
-      },
-      {
-        upsert: true,
-        new: true,
-        runValidators: true,
-      },
-    );
-
-    if (!newTags) {
-      throw new AppError(
-        httpStatus.BAD_REQUEST,
-        'Failed to update  dynamic course',
-        '',
-      );
-    }
-  }
-  // result
-  const result = await Shoes.findById(id).populate('createdBy');
+  const result = await Shoes.findById({ _id: id });
+  // console.log('object', result);
   return result;
 };
+
 // getSingleCourseWithReview
 const getSingleCourseWithReview = async (id: string) => {
   // console.log(id);
@@ -277,5 +208,5 @@ export const ShoesServices = {
   getSingleShoe,
   getSingleCourseWithReview,
   findBestCourse,
-  updateCourse,
+  updateShoe,
 };
