@@ -1,37 +1,32 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {TShoes } from './interface.shoes';
-import {   Shoes } from './model.shoes';
+import { TShoes } from './interface.shoes';
+import { Shoes } from './model.shoes';
 import AppError from '../../errors/AppErrors';
-import httpStatus from 'http-status'; 
+import httpStatus from 'http-status';
 import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
- 
-// create shoes
-const createShoes = async ( 
-  file: any,
-  shoesData: TShoes,
-) => {
-    
-    const imageName = `${shoesData?.productName}`;
-    const path = file?.path;
 
-    // send Image to cloudinary
-    const { secure_url } = (await sendImageToCloudinary(imageName, path)) as {
-      secure_url: string;
-    };
-  
-    const newShoes = {
-      ...shoesData,
-      coverPhoto :secure_url
-    }
-   
-    const result = await Shoes.create(newShoes);
- 
-    return result;
-   
+// create shoes
+const createShoes = async (file: any, shoesData: TShoes) => {
+  const imageName = `${shoesData?.productName}`;
+  const path = file?.path;
+
+  // send Image to cloudinary
+  const { secure_url } = (await sendImageToCloudinary(imageName, path)) as {
+    secure_url: string;
+  };
+
+  const newShoes = {
+    ...shoesData,
+    coverPhoto: secure_url,
+  };
+
+  const result = await Shoes.create(newShoes);
+
+  return result;
 };
 
-// get all course
-const getAllCourses = async (payload: Record<string, unknown>) => {
+// get all shoes
+const getAllShoes = async (payload: Record<string, unknown>) => {
   try {
     const {
       page = 1,
@@ -40,13 +35,15 @@ const getAllCourses = async (payload: Record<string, unknown>) => {
       sortOrder = 'asc',
       minPrice,
       maxPrice,
-      tags,
-      startDate,
-      endDate,
-      language,
-      provider,
-      durationInWeeks,
-      level,
+      releasedAt,
+
+      brand,
+      model,
+      size,
+      category,
+      color,
+      gender,
+      rawMaterial,
     } = payload;
 
     //  filter object based on query parameters
@@ -59,17 +56,25 @@ const getAllCourses = async (payload: Record<string, unknown>) => {
       if (maxPrice) filter.price.$lte = parseFloat(String(maxPrice));
     }
 
-    if (tags) filter['tags.name'] = { $regex: new RegExp(tags as string, 'i') };
-    if (startDate) filter.startDate = startDate;
-    if (endDate) filter.endDate = endDate;
-    if (language)
-      filter.language = { $regex: new RegExp(language as string, 'i') };
-    if (provider)
-      filter.provider = { $regex: new RegExp(provider as string, 'i') };
-    if (durationInWeeks)
-      filter.durationInWeeks = parseInt(String(durationInWeeks));
-    if (level)
-      filter['details.level'] = { $regex: new RegExp(level as string, 'i') };
+    if (releasedAt) {
+      const releaseDate = new Date(releasedAt as string);
+
+      // Check if the parsed date is valid
+      if (!isNaN(releaseDate.getTime())) {
+        // Filter documents where createdAt is greater than or equal to releaseDate
+        filter.createdAt = { $gte: releaseDate };
+      }
+    }
+
+    if (brand) filter.brand = { $regex: new RegExp(brand as string, 'i') };
+    if (model) filter.model = { $regex: new RegExp(model as string, 'i') };
+    if (size) filter.size = { $regex: new RegExp(size as string, 'i') };
+    if (gender) filter.gender = { $regex: new RegExp(gender as string, 'i') };
+    if (color) filter.color = { $regex: new RegExp(color as string, 'i') };
+    if (rawMaterial)
+      filter.rawMaterial = { $regex: new RegExp(rawMaterial as string, 'i') };
+    if (category)
+      filter.category = { $regex: new RegExp(category as string, 'i') };
 
     // sort order && sort by
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -92,67 +97,18 @@ const getAllCourses = async (payload: Record<string, unknown>) => {
   }
 };
 
-// getSingleCourseWithReview
-const getSingleCourseWithReview = async (id: string) => {
-  // console.log(id);
+// getSingle shoe
+const getSingleShoe = async (id: string) => {
+  const singleShoe = await Shoes.findById({ _id: id });
 
-  const singleCourse = await Shoes.findById(id)
-    .populate('createdBy', '-password -createdAt -updatedAt -__v')
-    .lean();
-
-  // get reviews
-  const reviews = await Review.find({ courseId: id })
-    .populate(
-      'createdBy',
-      '-password -createdAt -updatedAt -__v -passwordChangedAt',
-    )
-    .lean();
-  // console.log(reviews);
-
-  const courseWithReviews = { ...singleCourse, reviews: [...reviews] };
-  // console.log( courseWithReviews);
-  return courseWithReviews;
+  return singleShoe;
 };
 
-// find best course
-const findBestCourse = async () => {
-  // console.log(id);
-
-  const bestCourse = await Shoes.aggregate([
-    {
-      $lookup: {
-        from: 'reviews',
-        localField: '_id',
-        foreignField: 'courseId',
-        as: 'reviews',
-      },
-    },
-    {
-      $project: {
-        title: 1,
-        instructor: 1,
-        categoryId: 1,
-        price: 1,
-        tags: 1,
-        startDate: 1,
-        endDate: 1,
-        language: 1,
-        provider: 1,
-        durationInWeeks: 1,
-        details: 1,
-        averageRating: { $avg: '$reviews.rating' },
-        reviewCount: { $size: '$reviews' },
-      },
-    },
-    {
-      $sort: { averageRating: -1 },
-    },
-  ]);
-
-  if (bestShoes.length > 0) {
-    const result = bestCourse[0];
-    return result;
-  }
+// delete shoes
+const deleteShoe = async (id: string) => {
+  // get reviews
+  const deleteShoe = await Shoes.findByIdAndDelete({ _id: id });
+  return deleteShoe;
 };
 
 // update course
@@ -251,10 +207,74 @@ const updateCourse = async (id: string, updatedData: Partial<TShoes>) => {
   const result = await Shoes.findById(id).populate('createdBy');
   return result;
 };
+// getSingleCourseWithReview
+const getSingleCourseWithReview = async (id: string) => {
+  // console.log(id);
+
+  const singleCourse = await Shoes.findById(id)
+    .populate('createdBy', '-password -createdAt -updatedAt -__v')
+    .lean();
+
+  // get reviews
+  const reviews = await Review.find({ courseId: id })
+    .populate(
+      'createdBy',
+      '-password -createdAt -updatedAt -__v -passwordChangedAt',
+    )
+    .lean();
+  // console.log(reviews);
+
+  const courseWithReviews = { ...singleCourse, reviews: [...reviews] };
+  // console.log( courseWithReviews);
+  return courseWithReviews;
+};
+
+// find best course
+const findBestCourse = async () => {
+  // console.log(id);
+
+  const bestCourse = await Shoes.aggregate([
+    {
+      $lookup: {
+        from: 'reviews',
+        localField: '_id',
+        foreignField: 'courseId',
+        as: 'reviews',
+      },
+    },
+    {
+      $project: {
+        title: 1,
+        instructor: 1,
+        categoryId: 1,
+        price: 1,
+        tags: 1,
+        startDate: 1,
+        endDate: 1,
+        language: 1,
+        provider: 1,
+        durationInWeeks: 1,
+        details: 1,
+        averageRating: { $avg: '$reviews.rating' },
+        reviewCount: { $size: '$reviews' },
+      },
+    },
+    {
+      $sort: { averageRating: -1 },
+    },
+  ]);
+
+  if (bestShoes.length > 0) {
+    const result = bestCourse[0];
+    return result;
+  }
+};
 
 export const ShoesServices = {
   createShoes,
-  getAllCourses,
+  getAllShoes,
+  deleteShoe,
+  getSingleShoe,
   getSingleCourseWithReview,
   findBestCourse,
   updateCourse,

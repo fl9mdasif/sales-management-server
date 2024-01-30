@@ -4,7 +4,14 @@ export type TShoes = {
   price: number;
   quantity: number;
   productDescription: string;
-  coverPhoto : string | undefined;
-  // category: string;
- 
+
+  brand: string;
+  model: string;
+  size: string;
+  category: string;
+  gender: 'male' | 'female';
+  color: string;
+  rawMaterial: 'leather' | 'fabric' | 'jeans';
+
+  coverPhoto: string | undefined;
 };

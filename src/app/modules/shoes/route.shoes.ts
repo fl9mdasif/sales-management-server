@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import validateRequest from '../../middlewares/validateRequest';
-import {   ShoesValidation } from './validation.shoes';
+import { ShoesValidation } from './validation.shoes';
 import { shoesControllers } from './controller.shoes';
 import auth from '../../middlewares/auth';
 import { upload } from '../../utils/sendImageToCloudinary';
@@ -16,7 +16,7 @@ router.post(
     try {
       req.body = JSON.parse(req.body.data);
     } catch (error) {
-     res.status(400).json({ error: 'Invalid JSON data' });
+      res.status(400).json({ error: 'Invalid JSON data' });
       return;
     }
     next();
@@ -25,14 +25,16 @@ router.post(
   shoesControllers.createShoes,
 );
 
-router.get('/',
-        auth(USER_ROLE.admin),
-        shoesControllers.getAllShoes
-  );
+router.get(
+  '/',
+  // auth(USER_ROLE.admin),
+  shoesControllers.getAllShoes,
+);
+
+router.delete('/:shoeId', shoesControllers.deleteShoe);
 router.get('/best', shoesControllers.findBestCourse);
 
 router.put('/:courseId', auth('admin'), shoesControllers.updateCourse);
-
 
 router.get('/:courseId/reviews', shoesControllers.getSingleCourseWithReview);
 router.get('/best', shoesControllers.findBestCourse);
