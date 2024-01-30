@@ -2,12 +2,11 @@ import { Schema, model } from 'mongoose';
 import { TSells, SellsModel } from './interface.sells';
 import { Shoes } from '../shoes/model.shoes';
 
-const userSchema = new Schema<TSells, SellsModel>(
+const sellsSchema = new Schema<TSells, SellsModel>(
   {
     sellId: {
       type: Schema.Types.ObjectId,
       required: true,
-      unique: true,
       ref: 'Shoes',
     },
     buyer: {
@@ -18,8 +17,11 @@ const userSchema = new Schema<TSells, SellsModel>(
       type: Number,
       required: true,
     },
+    totalAmount: {
+      type: Number,
+    },
 
-    dateOfSales: { type: Date },
+    dateOfSales: { type: Date, required: true },
   },
 
   { timestamps: true },
@@ -42,8 +44,8 @@ const userSchema = new Schema<TSells, SellsModel>(
 
 // for auth
 // find user exists
-userSchema.statics.isShoeExists = async function (id: string) {
+sellsSchema.statics.isShoeExists = async function (id: string) {
   return await Shoes.findOne({ _id: id });
 };
 
-export const User = model<TSells, SellsModel>('Sells', userSchema);
+export const Sells = model<TSells, SellsModel>('Sells', sellsSchema);

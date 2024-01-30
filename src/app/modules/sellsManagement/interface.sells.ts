@@ -5,6 +5,7 @@ export interface TSells {
 
   buyer: string;
   quantity: number;
+  totalAmount?: number;
   dateOfSales: Date;
 }
 

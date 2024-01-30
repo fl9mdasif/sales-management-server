@@ -2,6 +2,7 @@ import express from 'express';
 import { SellValidationSchema } from './validation.sells';
 import validateRequest from '../../middlewares/validateRequest';
 import { shoesControllers } from '../shoes/controller.shoes';
+import { sellsController } from './controller.sells';
 
 const router = express.Router();
 
@@ -10,7 +11,7 @@ router.post(
   //   auth('admin'),
 
   validateRequest(SellValidationSchema),
-  shoesControllers.createShoes,
+  sellsController.createOrder,
 );
 
 router.get(
