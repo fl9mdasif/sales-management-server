@@ -15,7 +15,7 @@ const moduleRoute = [
     route: shoesRoute,
   },
   {
-    path: '/sells',
+    path: '/sales',
     route: sellsRoute,
   },
 ];

@@ -9,9 +9,9 @@ import {
   groupSalesByDay,
   groupSalesByMonth,
   groupSalesByYear,
-} from './utils.sales'; // Implement utility functions for grouping sales data
+} from './utils.sales';
 
-// create shoes
+// create sales
 const createOrder = async (orderData: TSales) => {
   //   console.log('service', orderData);
   try {
@@ -63,99 +63,15 @@ const createOrder = async (orderData: TSales) => {
     const result = await Sales.create(orderDataWithTotalAmount);
     return result;
   } catch (err) {
-    console.log('res', err);
+    // throw new AppError(
+    //   httpStatus.NOT_FOUND,
+    //   'Product is is not enough to sell',
+    // );
+    console.log(err);
   }
 };
 
-// get all shoes
-// const getAllOrder = async (payload: Record<string, unknown>) => {
-//   try {
-//     const {
-//       page = 1,
-//       limit = 10,
-//       sortBy = 'startDate',
-//       sortOrder = 'asc',
-//       minPrice,
-//       maxPrice,
-//       releasedAt,
-
-//       brand,
-//       model,
-//       size,
-//       category,
-//       color,
-//       gender,
-//       rawMaterial,
-//     } = payload;
-
-//     //  filter object based on query parameters
-//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//     const filter: any = {};
-
-//     if (minPrice || maxPrice) {
-//       filter.price = {};
-//       if (minPrice) filter.price.$gte = parseFloat(String(minPrice));
-//       if (maxPrice) filter.price.$lte = parseFloat(String(maxPrice));
-//     }
-
-//     if (releasedAt) {
-//       const releaseDate = new Date(releasedAt as string);
-
-//       // Check if the parsed date is valid
-//       if (!isNaN(releaseDate.getTime())) {
-//         // Filter documents where createdAt is greater than or equal to releaseDate
-//         filter.createdAt = { $gte: releaseDate };
-//       }
-//     }
-
-//     if (brand) filter.brand = { $regex: new RegExp(brand as string, 'i') };
-//     if (model) filter.model = { $regex: new RegExp(model as string, 'i') };
-//     if (size) filter.size = { $regex: new RegExp(size as string, 'i') };
-//     if (gender) filter.gender = { $regex: new RegExp(gender as string, 'i') };
-//     if (color) filter.color = { $regex: new RegExp(color as string, 'i') };
-//     if (rawMaterial)
-//       filter.rawMaterial = { $regex: new RegExp(rawMaterial as string, 'i') };
-//     if (category)
-//       filter.category = { $regex: new RegExp(category as string, 'i') };
-
-//     // sort order && sort by
-//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//     const sort: Record<string, any> = {};
-//     sort[sortBy as string] = sortOrder === 'asc' ? 1 : -1;
-
-//     // calculate skip value for pagination
-//     const skip = (parseInt(String(page)) - 1) * parseInt(String(limit));
-
-//     const result = await Sells.find(filter)
-//       // .populate('createdBy', '-password -createdAt -updatedAt')
-//       .sort(sort)
-//       .skip(skip)
-//       .limit(parseInt(String(limit)));
-
-//     // Group by week
-//     const getWeekNumber = (date: Date): number => {
-//       const d = new Date(date);
-//       d.setHours(0, 0, 0, 0);
-//       d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-//       const yearStart: Date = new Date(d.getFullYear(), 0, 1);
-//       const weekNumber = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
-//       return weekNumber;
-//     };
-
-//     const weekNumber = getWeekNumber(new Date());
-
-//     // Now, you can use weekNumber in arithmetic operations
-//     const week = weekNumber + 1;
-
-//     console.log('sells week', week);
-
-//     return result;
-//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//   } catch (err: any) {
-//     throw new Error(err);
-//   }
-// };
-
+// get sales history
 export async function getSalesHistory(timeInterval: string): Promise<any> {
   const salesData: TSales[] = await Sales.find();
 
@@ -170,31 +86,31 @@ export async function getSalesHistory(timeInterval: string): Promise<any> {
     data: TResult[];
   };
 
-  let groupedSales: TGroupedSales[] = [];
+  const groupedSales: TGroupedSales[] = [];
   //   console.log(groupedSales);
 
   //   console.log(groupSalesByWeek(salesData));
 
   switch (timeInterval) {
-    case 'Weekly':
+    case 'weekly':
       groupedSales.push({
         period: 'weekly',
         data: groupSalesByWeek(salesData).data,
       });
       break;
-    case 'Daily':
+    case 'daily':
       groupedSales.push({
         period: 'daily',
         data: groupSalesByDay(salesData).data,
       });
       break;
-    case 'Monthly':
+    case 'monthly':
       groupedSales.push({
         period: 'monthly',
         data: groupSalesByMonth(salesData).data,
       });
       break;
-    case 'Yearly':
+    case 'yearly':
       groupedSales.push({
         period: 'yearly',
         data: groupSalesByYear(salesData).data,

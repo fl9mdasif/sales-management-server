@@ -33,6 +33,7 @@ const getSendResponse = <T>(res: Response, data: TResponse<T>) => {
       limit: parseInt(String(data?.meta?.limit)),
       total: parseInt(String(data?.meta?.total)),
     },
+
     data: data.data,
   });
 };

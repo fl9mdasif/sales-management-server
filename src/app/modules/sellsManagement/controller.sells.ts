@@ -21,14 +21,14 @@ const createOrder: RequestHandler = async (req, res) => {
 // get all course
 const getAllOrder = catchAsync(async (req, res) => {
   const timeInterval = req.query.history;
-  //   console.log('c', timeInterval);
   const result = await sellsServices.getSalesHistory(timeInterval);
+  // console.log('c', result.length);
 
   response.createSendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
 
-    message: 'Shoes retrieved successfully',
+    message: `  Sales retrieved successfully`,
     data: result,
   });
 });
