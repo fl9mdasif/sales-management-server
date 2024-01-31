@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post(
   '/create-shoes',
-  auth('admin'),
+  // auth('admin'),
   upload.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     try {

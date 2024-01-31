@@ -18,7 +18,7 @@ export const sendImageToCloudinary = (image_name: string, path: string) => {
       path,
       { public_id: image_name },
       function (error, result) {
-        console.log(result);
+        // console.log(result);
         if (error) {
           reject(error);
         }

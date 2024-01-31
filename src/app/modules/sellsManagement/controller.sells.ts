@@ -3,11 +3,11 @@ import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 import { response } from '../../utils/sendResponse';
 import { sellsServices } from './service.sells';
-import { Sells } from './model.sells';
+// import { Sells } from './model.sells';
 
 // create course
 const createOrder: RequestHandler = async (req, res) => {
-  //   console.log(req.body);
+  // console.log(req.body);
   const result = await sellsServices.createOrder(req.body);
 
   response.createSendResponse(res, {

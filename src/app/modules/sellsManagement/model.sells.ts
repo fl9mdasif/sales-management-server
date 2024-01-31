@@ -1,10 +1,10 @@
 import { Schema, model } from 'mongoose';
-import { TSells, SellsModel } from './interface.sells';
+import { TSales, SalesModel } from './interface.sells';
 import { Shoes } from '../shoes/model.shoes';
 
-const sellsSchema = new Schema<TSells, SellsModel>(
+const salesSchema = new Schema<TSales, SalesModel>(
   {
-    sellId: {
+    productId: {
       type: Schema.Types.ObjectId,
       required: true,
       ref: 'Shoes',
@@ -44,8 +44,8 @@ const sellsSchema = new Schema<TSells, SellsModel>(
 
 // for auth
 // find user exists
-sellsSchema.statics.isShoeExists = async function (id: string) {
-  return await Shoes.findOne({ _id: id });
+salesSchema.statics.isShoeExists = async function (id: string) {
+  return await Shoes.findOne({ id });
 };
 
-export const Sells = model<TSells, SellsModel>('Sells', sellsSchema);
+export const Sales = model<TSales, SalesModel>('Sales', salesSchema);

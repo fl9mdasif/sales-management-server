@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-export const SellValidationSchema = z.object({
+export const salesValidationSchema = z.object({
   body: z.object({
-    sellId: z.string(),
+    productId: z.string(),
     buyer: z.string(),
     quantity: z.number(),
     totalAmount: z.number().optional(),

@@ -1,5 +1,5 @@
 import express from 'express';
-import { SellValidationSchema } from './validation.sells';
+import { salesValidationSchema } from './validation.sells';
 import validateRequest from '../../middlewares/validateRequest';
 import { shoesControllers } from '../shoes/controller.shoes';
 import { sellsController } from './controller.sells';
@@ -10,7 +10,7 @@ router.post(
   '/',
   //   auth('admin'),
 
-  validateRequest(SellValidationSchema),
+  validateRequest(salesValidationSchema),
   sellsController.createOrder,
 );
 

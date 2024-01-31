@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppErrors';
 import { Shoes } from '../shoes/model.shoes';
-import { TSells } from './interface.sells';
-import { Sells } from './model.sells';
-import { TSells } from './interface.sells'; // Adjust the import path based on your project structure
+import { TSales } from './interface.sells';
+import { Sales } from './model.sells';
 import {
   groupSalesByWeek,
   groupSalesByDay,
@@ -12,41 +12,59 @@ import {
 } from './utils.sales'; // Implement utility functions for grouping sales data
 
 // create shoes
-const createOrder = async (orderData: TSells) => {
+const createOrder = async (orderData: TSales) => {
   //   console.log('service', orderData);
+  try {
+    // find product
+    const product = await Shoes.findById({ _id: orderData.productId });
 
-  // find product
-  const product = await Shoes.findById({ _id: orderData.sellId });
+    // check product is available
+    if (!product) {
+      throw new AppError(httpStatus.NOT_FOUND, 'product not found');
+    }
 
-  if (!product) {
-    throw new AppError(httpStatus.NOT_FOUND, 'product not found');
+    // order total price
+    const totalAmount = orderData.quantity * (product?.price as number);
+
+    // create oder data with total price
+    const orderDataWithTotalAmount = {
+      ...orderData,
+      totalAmount,
+    };
+
+    // If the quantity reaches zero, the product will be removed from the inventory.
+    // If quantity reaches zero, consider removing the product
+    if (product.quantity == 0) {
+      // console.log('product nai');
+      await Shoes.findByIdAndDelete({ _id: orderData.productId });
+    } else {
+      //   console.log(updateQuantity);
+      await product.save();
+    }
+
+    // check the product quantity is available for sell
+    if (product.quantity < orderData.quantity) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        `Decrease Your quantity for sell. we have only ${product.quantity}`,
+        // 'quantity',
+      );
+    }
+
+    // Basic update primitive fields
+    // update product quantity after order
+    await Shoes.findOneAndUpdate(
+      { _id: orderData.productId },
+
+      { $set: { quantity: product.quantity - orderData.quantity } },
+      { upsert: true, new: true, runValidators: true },
+    );
+
+    const result = await Sales.create(orderDataWithTotalAmount);
+    return result;
+  } catch (err) {
+    console.log('res', err);
   }
-
-  // order total price
-  const totalAmount = orderData.quantity * (product?.price as number);
-
-  // create oder data with total price
-  const orderDataWithTotalAmount = {
-    ...orderData,
-    totalAmount,
-  };
-
-  // Basic update primitive fields
-  // update product quantity after order
-
-  await Shoes.findOneAndUpdate(
-    { _id: orderData.sellId },
-
-    { $set: { quantity: product.quantity - orderData.quantity } },
-    { upsert: true, new: true, runValidators: true },
-  );
-
-  // If the quantity reaches zero, the product will be removed from the inventory.
-
-  //   console.log(updateQuantity);
-  const result = await Sells.create(orderDataWithTotalAmount);
-
-  return result;
 };
 
 // get all shoes
@@ -139,7 +157,7 @@ const createOrder = async (orderData: TSells) => {
 // };
 
 export async function getSalesHistory(timeInterval: string): Promise<any> {
-  const salesData: TSells[] = await Sells.find();
+  const salesData: TSales[] = await Sales.find();
 
   type TResult = {
     week: number;
@@ -153,7 +171,7 @@ export async function getSalesHistory(timeInterval: string): Promise<any> {
   };
 
   let groupedSales: TGroupedSales[] = [];
-  console.log(groupedSales);
+  //   console.log(groupedSales);
 
   //   console.log(groupSalesByWeek(salesData));
 
@@ -165,13 +183,22 @@ export async function getSalesHistory(timeInterval: string): Promise<any> {
       });
       break;
     case 'Daily':
-      groupedSales = groupSalesByDay(salesData);
+      groupedSales.push({
+        period: 'daily',
+        data: groupSalesByDay(salesData).data,
+      });
       break;
     case 'Monthly':
-      groupedSales = groupSalesByMonth(salesData);
+      groupedSales.push({
+        period: 'monthly',
+        data: groupSalesByMonth(salesData).data,
+      });
       break;
     case 'Yearly':
-      groupedSales = groupSalesByYear(salesData);
+      groupedSales.push({
+        period: 'yearly',
+        data: groupSalesByYear(salesData).data,
+      });
       break;
     default:
       return salesData;
