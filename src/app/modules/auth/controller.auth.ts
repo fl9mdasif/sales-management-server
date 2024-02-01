@@ -9,6 +9,7 @@ const loginUser = catchAsync(async (req, res) => {
 
   const { data, accessToken, refreshToken } = result;
 
+  // console.log(accessToken, refreshToken);
   res.cookie('refreshToken', refreshToken, {
     secure: config.NODE_ENV === 'production',
     httpOnly: true,
@@ -41,7 +42,23 @@ const changePassword = catchAsync(async (req, res) => {
   });
 });
 
+// refresh
+const refreshToken = catchAsync(async (req, res) => {
+  const { refreshToken } = req.cookies;
+
+  // console.log('r', refreshToken);
+  const result = await authServices.refreshToken(refreshToken);
+
+  response.createSendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Refresh token is retrieved successfully!',
+    data: result,
+  });
+});
+
 export const authControllers = {
   loginUser,
   changePassword,
+  refreshToken,
 };

@@ -25,7 +25,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
       token,
       config.jwt_access_secret as string,
     ) as JwtPayload;
-
+    // console.log('d', decoded);
     const { role, username, iat } = decoded;
 
     // checking if the user is exist

@@ -13,6 +13,7 @@ cloudinary.config({
 
 export const sendImageToCloudinary = (image_name: string, path: string) => {
   //
+  console.log(image_name);
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload(
       path,

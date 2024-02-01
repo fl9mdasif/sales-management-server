@@ -73,7 +73,6 @@ userSchema.set('toJSON', {
 userSchema.statics.isUserExists = async function (name: string) {
   return await User.findOne({ username: name });
 };
-
 // jwt password time checking
 userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
   passwordChangedTimestamp: Date,

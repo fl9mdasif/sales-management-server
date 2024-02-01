@@ -12,7 +12,7 @@ const router = express.Router();
 // register a user
 router.post(
   '/register',
-  auth('admin'),
+  // auth('admin'),
   validateRequest(userZodValidationSchema.userRegistrationValidation),
   userControllers.registerUser,
 );
@@ -27,8 +27,15 @@ router.post(
 // change password
 router.post(
   '/change-password',
-  auth(USER_ROLE.admin, USER_ROLE.user),
+  auth(USER_ROLE.user),
   validateRequest(authValidations.changePasswordValidationSchema),
   authControllers.changePassword,
+);
+
+// refresh token
+router.post(
+  '/refresh-token',
+  validateRequest(authValidations.refreshTokenValidationSchema),
+  authControllers.refreshToken,
 );
 export const authRoute = router;

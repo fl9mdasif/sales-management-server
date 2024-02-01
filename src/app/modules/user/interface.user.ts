@@ -7,7 +7,7 @@ export interface TUser {
   email: string;
   contactNumber: string;
   password: string;
-  role: 'user' | 'admin';
+  role: 'user';
   passwordChangedAt?: Date;
 }
 export type TUserRole = keyof typeof USER_ROLE;

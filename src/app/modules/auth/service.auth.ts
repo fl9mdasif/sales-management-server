@@ -3,9 +3,9 @@ import { User } from '../user/mode.user';
 import { TLoginUser } from './interface.auth';
 import AppError from '../../errors/AppErrors';
 import config from '../../config';
-import { createToken } from './utils.auth';
-import { JwtPayload } from 'jsonwebtoken';
+import { createToken, verifyToken } from './utils.auth';
 import bcrypt from 'bcrypt';
+import { JwtPayload } from 'jsonwebtoken';
 
 const loginUser = async (payload: TLoginUser) => {
   //
@@ -20,8 +20,8 @@ const loginUser = async (payload: TLoginUser) => {
   if (!(await User.isPasswordMatched(payload?.password, user?.password)))
     throw new AppError(
       httpStatus.FORBIDDEN,
-      '',
       `Password of '${user.role}' do not matched`,
+      'password',
     );
   // console.log(user);
 
@@ -61,9 +61,10 @@ const changePassword = async (
 ) => {
   // 01. checking if the user is exist
   const user = await User.isUserExists(userData.username);
+  // console.log(user);
 
   if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, '', 'This user is not found !');
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !', '');
   }
 
   // 02. checking if the password is correct
@@ -77,8 +78,8 @@ const changePassword = async (
   if (payload.currentPassword === payload.newPassword) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      '',
       'Password change failed. Ensure the new password is unique and not among the last 2 used',
+      '',
     );
     return null;
   }
@@ -104,7 +105,51 @@ const changePassword = async (
   return user;
 };
 
+// create refresh token
+const refreshToken = async (token: string) => {
+  // console.log(token);
+  // checking if the given token is valid
+
+  const decoded = verifyToken(
+    token,
+    config.jwt_access_secret as string,
+  ) as JwtPayload;
+
+  const { iat, username } = decoded;
+
+  // checking if the user is exist
+  const user = await User.isUserExists(username);
+  // console.log(decoded);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+  }
+
+  if (
+    user.passwordChangedAt &&
+    User.isJWTIssuedBeforePasswordChanged(user.passwordChangedAt, iat as number)
+  ) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized !');
+  }
+
+  const jwtPayload = {
+    username: user.username,
+    role: user.role,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in as string,
+  );
+
+  return {
+    accessToken,
+  };
+};
+
 export const authServices = {
   loginUser,
   changePassword,
+  refreshToken,
 };
