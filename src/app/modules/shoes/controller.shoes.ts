@@ -7,7 +7,7 @@ import { Shoes } from './model.shoes';
 
 // create course
 const createShoes: RequestHandler = async (req, res) => {
-  const result = await ShoesServices.createShoes(req.file, req.body);
+  const result = await ShoesServices.createShoes(req.body);
 
   response.createSendResponse(res, {
     statusCode: httpStatus.OK,
@@ -40,8 +40,8 @@ const getAllShoes = catchAsync(async (req, res) => {
     success: true,
     meta: {
       page: Number(page ? page : 1),
-      limit: Number(limit ? limit : 10),
-      total: Number(total),
+      limit: Number(100),
+      total,
       // total: 0,
     },
     message: 'Shoes retrieved successfully',
@@ -93,37 +93,10 @@ const updateShoe = catchAsync(async (req, res) => {
   });
 });
 
-// Get single course with reviews
-const getSingleCourseWithReview = catchAsync(async (req, res) => {
-  const { courseId } = req.params;
-  // console.log({ courseId });
-
-  const course = await ShoesServices.getSingleCourseWithReview(courseId);
-  response.createSendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Course and Reviews retrieved successfully',
-    data: { course },
-  });
-});
-
-// findBestCourse
-const findBestCourse = catchAsync(async (req, res) => {
-  const course = await ShoesServices.findBestCourse();
-  response.createSendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Best course retrieved successfully',
-    data: { course },
-  });
-});
-
 export const shoesControllers = {
   createShoes,
   getAllShoes,
   deleteShoe,
   getSingleShoe,
   updateShoe,
-  getSingleCourseWithReview,
-  findBestCourse,
 };

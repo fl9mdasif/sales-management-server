@@ -13,12 +13,10 @@ const userSchema = new Schema<TUser, UserModel>(
     email: {
       type: String,
       required: true,
-      unique: true,
     },
     contactNumber: {
       type: String,
       required: true,
-      unique: true,
     },
     password: {
       type: String,

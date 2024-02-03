@@ -3,25 +3,10 @@ import { TShoes } from './interface.shoes';
 import { Shoes } from './model.shoes';
 import AppError from '../../errors/AppErrors';
 import httpStatus from 'http-status';
-import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 
 // create shoes
-const createShoes = async (file: any, shoesData: TShoes) => {
-  const imageName = `${shoesData?.productName}`;
-  const path = file?.path;
-
-  // send Image to cloudinary
-  const { secure_url } = (await sendImageToCloudinary(imageName, path)) as {
-    secure_url: string;
-  };
-
-  const newShoes = {
-    ...shoesData,
-    coverPhoto: secure_url,
-  };
-
-  const result = await Shoes.create(newShoes);
-
+const createShoes = async (shoesData: TShoes) => {
+  const result = await Shoes.create(shoesData);
   return result;
 };
 
@@ -36,7 +21,7 @@ const getAllShoes = async (payload: Record<string, unknown>) => {
       minPrice,
       maxPrice,
       releasedAt,
-
+      productName,
       brand,
       model,
       size,
@@ -66,6 +51,8 @@ const getAllShoes = async (payload: Record<string, unknown>) => {
       }
     }
 
+    if (productName)
+      filter.productName = { $regex: new RegExp(productName as string, 'i') };
     if (brand) filter.brand = { $regex: new RegExp(brand as string, 'i') };
     if (model) filter.model = { $regex: new RegExp(model as string, 'i') };
     if (size) filter.size = { $regex: new RegExp(size as string, 'i') };
@@ -138,75 +125,10 @@ const updateShoe = async (id: string, updatedData: Partial<TShoes>) => {
   return result;
 };
 
-// getSingleCourseWithReview
-const getSingleCourseWithReview = async (id: string) => {
-  // console.log(id);
-
-  const singleCourse = await Shoes.findById(id)
-    .populate('createdBy', '-password -createdAt -updatedAt -__v')
-    .lean();
-
-  // get reviews
-  const reviews = await Review.find({ courseId: id })
-    .populate(
-      'createdBy',
-      '-password -createdAt -updatedAt -__v -passwordChangedAt',
-    )
-    .lean();
-  // console.log(reviews);
-
-  const courseWithReviews = { ...singleCourse, reviews: [...reviews] };
-  // console.log( courseWithReviews);
-  return courseWithReviews;
-};
-
-// find best course
-const findBestCourse = async () => {
-  // console.log(id);
-
-  const bestCourse = await Shoes.aggregate([
-    {
-      $lookup: {
-        from: 'reviews',
-        localField: '_id',
-        foreignField: 'courseId',
-        as: 'reviews',
-      },
-    },
-    {
-      $project: {
-        title: 1,
-        instructor: 1,
-        categoryId: 1,
-        price: 1,
-        tags: 1,
-        startDate: 1,
-        endDate: 1,
-        language: 1,
-        provider: 1,
-        durationInWeeks: 1,
-        details: 1,
-        averageRating: { $avg: '$reviews.rating' },
-        reviewCount: { $size: '$reviews' },
-      },
-    },
-    {
-      $sort: { averageRating: -1 },
-    },
-  ]);
-
-  if (bestShoes.length > 0) {
-    const result = bestCourse[0];
-    return result;
-  }
-};
-
 export const ShoesServices = {
   createShoes,
   getAllShoes,
   deleteShoe,
   getSingleShoe,
-  getSingleCourseWithReview,
-  findBestCourse,
   updateShoe,
 };

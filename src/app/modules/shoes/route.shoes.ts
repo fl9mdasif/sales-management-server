@@ -11,16 +11,16 @@ const router = express.Router();
 router.post(
   '/create-shoes',
   // auth('admin'),
-  upload.single('file'),
-  (req: Request, res: Response, next: NextFunction) => {
-    try {
-      req.body = JSON.parse(req.body.data);
-    } catch (error) {
-      res.status(400).json({ error: 'Invalid JSON data' });
-      return;
-    }
-    next();
-  },
+  // upload.single('file'),
+  // (req: Request, res: Response, next: NextFunction) => {
+  //   try {
+  //     req.body = JSON.parse(req.body.data);
+  //   } catch (error) {
+  //     res.status(400).json({ error: 'Invalid JSON data' });
+  //     return;
+  //   }
+  //   next();
+  // },
   validateRequest(ShoesValidation.CreateShoesValidationSchema),
   shoesControllers.createShoes,
 );
@@ -35,16 +35,11 @@ router.get('/:shoeId', shoesControllers.getSingleShoe);
 // delete
 router.delete('/:shoeId', shoesControllers.deleteShoe);
 
-router.get('/best', shoesControllers.findBestCourse);
-
 router.put(
   '/:shoeId',
   //  auth('admin'),
   validateRequest(ShoesValidation.UpdateShoesValidationSchema),
   shoesControllers.updateShoe,
 );
-
-router.get('/:courseId/reviews', shoesControllers.getSingleCourseWithReview);
-router.get('/best', shoesControllers.findBestCourse);
 
 export const shoesRoute = router;

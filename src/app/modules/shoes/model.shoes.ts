@@ -19,7 +19,7 @@ const shoesSchema = new Schema<TShoes>(
     price: { type: Number, required: true },
 
     brand: { type: String, required: true },
-    model: { type: String, required: true, unique: true },
+    model: { type: String, required: true },
     size: { type: String, required: true },
     gender: { type: String, required: true },
     category: { type: String, required: true },
