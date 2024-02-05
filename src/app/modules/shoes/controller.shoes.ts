@@ -50,16 +50,16 @@ const getAllShoes = catchAsync(async (req, res) => {
 });
 // delete shoe
 const deleteShoe = catchAsync(async (req, res) => {
-  const { shoeId } = req.params;
+  const shoeIds = req.body as string[];
   // console.log({ courseId });
 
-  await ShoesServices.deleteShoe(shoeId);
+  const resp = await ShoesServices.deleteShoe(shoeIds);
 
   response.createSendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Shoe deleted successfully',
-    data: null,
+    message: 'Shoes deleted successfully',
+    data: resp,
   });
 });
 

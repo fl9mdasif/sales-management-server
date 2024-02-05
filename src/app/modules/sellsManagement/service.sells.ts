@@ -11,63 +11,50 @@ import {
   groupSalesByYear,
 } from './utils.sales';
 
-// create sales
 const createOrder = async (orderData: TSales) => {
-  //   console.log('service', orderData);
   try {
-    // find product
     const product = await Shoes.findById({ _id: orderData.productId });
 
-    // check product is available
     if (!product) {
-      throw new AppError(httpStatus.NOT_FOUND, 'product not found');
+      throw new AppError(httpStatus.NOT_FOUND, 'Product not found');
     }
 
-    // order total price
     const totalAmount = orderData.quantity * (product?.price as number);
-
-    // create oder data with total price
     const orderDataWithTotalAmount = {
       ...orderData,
       totalAmount,
     };
 
-    // If the quantity reaches zero, the product will be removed from the inventory.
-    // If quantity reaches zero, consider removing the product
-    if (product.quantity == 0) {
-      // console.log('product nai');
+    if (product.quantity === 0) {
       await Shoes.findByIdAndDelete({ _id: orderData.productId });
-    } else {
-      //   console.log(updateQuantity);
-      await product.save();
     }
 
-    // check the product quantity is available for sell
-    if (product.quantity < orderData.quantity) {
+    if (orderData.quantity > product.quantity) {
       throw new AppError(
-        httpStatus.BAD_REQUEST,
-        `Decrease Your quantity for sell. we have only ${product.quantity}`,
-        // 'quantity',
+        httpStatus.NOT_FOUND,
+        `Decrease your quantity for sell. We have only ${product.quantity}`,
+        'quantity',
       );
     }
 
-    // Basic update primitive fields
-    // update product quantity after order
+    // Update product quantity
     await Shoes.findOneAndUpdate(
       { _id: orderData.productId },
-
       { $set: { quantity: product.quantity - orderData.quantity } },
       { upsert: true, new: true, runValidators: true },
     );
 
+    // Create order
     const result = await Sales.create(orderDataWithTotalAmount);
+
+    // console.log('Updated Product:', updatedProduct);
+    // console.log('Order Result:', result);
+
     return result;
   } catch (err) {
-    // throw new AppError(
-    //   httpStatus.NOT_FOUND,
-    //   'Product is is not enough to sell',
-    // );
-    console.log(err);
+    return false;
+    // console.log(er);
+    // Re-throw the error to handle it elsewhere if needed
   }
 };
 

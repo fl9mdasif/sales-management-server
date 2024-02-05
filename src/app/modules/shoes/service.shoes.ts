@@ -92,9 +92,9 @@ const getSingleShoe = async (id: string) => {
 };
 
 // delete shoes
-const deleteShoe = async (id: string) => {
+const deleteShoe = async (ids: string[]) => {
   // get reviews
-  const deleteShoe = await Shoes.findByIdAndDelete({ _id: id });
+  const deleteShoe = await Shoes.deleteMany({ _id: { $in: ids } });
   return deleteShoe;
 };
 

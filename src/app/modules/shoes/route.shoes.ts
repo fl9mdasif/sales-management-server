@@ -10,17 +10,7 @@ const router = express.Router();
 
 router.post(
   '/create-shoes',
-  // auth('admin'),
-  // upload.single('file'),
-  // (req: Request, res: Response, next: NextFunction) => {
-  //   try {
-  //     req.body = JSON.parse(req.body.data);
-  //   } catch (error) {
-  //     res.status(400).json({ error: 'Invalid JSON data' });
-  //     return;
-  //   }
-  //   next();
-  // },
+
   validateRequest(ShoesValidation.CreateShoesValidationSchema),
   shoesControllers.createShoes,
 );
@@ -33,7 +23,7 @@ router.get(
 // get single
 router.get('/:shoeId', shoesControllers.getSingleShoe);
 // delete
-router.delete('/:shoeId', shoesControllers.deleteShoe);
+router.delete('/shoeIds', shoesControllers.deleteShoe);
 
 router.put(
   '/:shoeId',
