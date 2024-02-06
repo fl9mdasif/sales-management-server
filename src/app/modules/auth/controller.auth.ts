@@ -6,17 +6,7 @@ import { authServices } from './service.auth';
 const loginUser = catchAsync(async (req, res) => {
   const result = await authServices.loginUser(req.body);
 
-  const { data, accessToken, refreshToken } = result;
-
-  console.log('res', result);
-  // // console.log(accessToken, refreshToken);
-  // res.cookie('refreshToken', refreshToken, {
-  //   secure: config.NODE_ENV === 'production',
-  //   httpOnly: true,
-  // });
-  // Set accessToken and refreshToken in localStorage
-  localStorage.setItem('accessToken', accessToken);
-  localStorage.setItem('refreshToken', refreshToken);
+  const { data, accessToken } = result;
 
   response.createSendResponse(res, {
     statusCode: httpStatus.OK,
@@ -48,8 +38,10 @@ const changePassword = catchAsync(async (req, res) => {
 // refresh
 const refreshToken = catchAsync(async (req, res) => {
   // Retrieve refreshToken
-  // const { refreshToken } = req.cookies;
-  const refreshToken = localStorage.getItem('refreshToken') as string | null;
+  const { refreshToken } = req.cookies;
+
+  // const refreshToken = localStorage.getItem('refreshToken') as string | null;
+
   if (refreshToken) {
     // console.log('r', refreshToken);
     const result = await authServices.refreshToken(refreshToken);

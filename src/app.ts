@@ -12,7 +12,7 @@ const app: Application = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: 'http://localhost:5173', // Update with the actual origin of your frontend
+    origin: 'https://sales-management-client-lake.vercel.app', // Update with the actual origin of your frontend
     credentials: true,
   }),
 );
