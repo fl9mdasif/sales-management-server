@@ -40,7 +40,7 @@ const getAllShoes = catchAsync(async (req, res) => {
     success: true,
     meta: {
       page: Number(page ? page : 1),
-      limit: Number(100),
+      limit: Number(limit ? limit : 20),
       total,
       // total: 0,
     },
@@ -80,6 +80,7 @@ const getSingleShoe = catchAsync(async (req, res) => {
 // update course
 const updateShoe = catchAsync(async (req, res) => {
   const { shoeId } = req.params;
+  // console.log(shoeId);
   const updatedData = req.body;
 
   const result = await ShoesServices.updateShoe(shoeId, updatedData);
@@ -88,7 +89,7 @@ const updateShoe = catchAsync(async (req, res) => {
   response.createSendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Course updated successfully',
+    message: 'Product updated successfully',
     data: result,
   });
 });

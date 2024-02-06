@@ -7,7 +7,7 @@ const CreateShoesValidationSchema = z.object({
     productName: z.string(),
     quantity: z.number(), // Assuming you're using strings as ObjectIds, adjust if needed
     price: z.number(),
-    productDescription: z.string(),
+    productDescription: z.string().optional(),
 
     brand: z.string(),
     model: z.string(),

@@ -15,7 +15,7 @@ const getAllShoes = async (payload: Record<string, unknown>) => {
   try {
     const {
       page = 1,
-      limit = 10,
+      limit = 15,
       sortBy = 'startDate',
       sortOrder = 'asc',
       minPrice,
@@ -100,27 +100,27 @@ const deleteShoe = async (ids: string[]) => {
 
 // update course
 const updateShoe = async (id: string, updatedData: Partial<TShoes>) => {
-  const { ...shoeData } = updatedData;
-
+  // console.log(id);
   // console.log(courseRemainingData);
 
   // Basic update primitive fields
   const updatedBasicShoeInfo = await Shoes.findOneAndUpdate(
     { _id: id },
 
-    { $set: shoeData },
+    { $set: updatedData },
     { upsert: true, new: true, runValidators: true },
   );
 
   if (!updatedBasicShoeInfo) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      'Failed to update basic course',
+      'Failed to update basic product',
       '',
     );
   }
 
   const result = await Shoes.findById({ _id: id });
+  // console.log('update', updateShoe);
   // console.log('object', result);
   return result;
 };

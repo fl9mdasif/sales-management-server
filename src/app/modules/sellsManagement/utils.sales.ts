@@ -1,4 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-unused-vars */
+// /* eslint-disable @typescript-eslint/no-explicit-any */
+// import { TSales } from './interface.sells';
+
 import { TSales } from './interface.sells';
 
 function getWeekNumber(date: Date): number {
@@ -13,131 +16,59 @@ function getWeekNumber(date: Date): number {
   return Math.ceil((firstThursday - target.valueOf()) / 604800000);
 }
 
-export function groupSalesByWeek(salesData: TSales[]): any {
-  const groupedSales = {
-    period: 'weekly',
-    data: [],
-  };
+// export function groupSalesByWeek(salesData: TSales[]): any {
 
-  const salesByWeek = new Map<
-    number,
-    { totalSales: number; averageQuantity: number }
-  >();
-
-  for (const sale of salesData) {
-    const weekNumber: number = getWeekNumber(sale.dateOfSales);
-    const weekData = salesByWeek.get(weekNumber) || {
-      totalSales: 0,
-      averageQuantity: 0,
-    };
-    weekData.totalSales += sale.totalAmount;
-    weekData.averageQuantity += sale.quantity;
-    salesByWeek.set(weekNumber, weekData);
+// Function for determining the grouping key
+function getGroupingKey(date: Date, period: GroupingPeriod): number {
+  switch (period) {
+    case 'daily':
+      return date.getDate();
+    case 'weekly':
+      return getWeekNumber(date);
+    case 'monthly':
+      return date.getMonth() + 1;
+    case 'yearly':
+      return date.getFullYear();
+    default:
+      throw new Error(`Invalid grouping period: ${period}`);
   }
-
-  for (const [weekNumber, data] of salesByWeek.entries()) {
-    groupedSales.data.push({
-      week: (weekNumber + 1) as number,
-      totalSales: data.totalSales,
-      averageQuantity: data.averageQuantity,
-    });
-  }
-
-  return groupedSales;
 }
 
-// group sell by day
-export function groupSalesByDay(salesData: TSales[]): any {
-  const groupedSales = {
-    period: 'daily',
-    data: [],
-  };
-
-  const salesByDay = new Map<
-    number,
-    { totalSales: number; averageQuantity: number }
-  >();
-
-  for (const sale of salesData) {
-    const day = sale.dateOfSales.getDate();
-    const dayData = salesByDay.get(day) || {
-      totalSales: 0,
-      averageQuantity: 0,
-    };
-    dayData.totalSales += sale.totalAmount;
-    dayData.averageQuantity += sale.quantity;
-    salesByDay.set(day, dayData);
-  }
-
-  for (const [day, data] of salesByDay.entries()) {
-    groupedSales.data.push({
-      day,
-      totalSales: data.totalSales,
-      averageQuantity: data.averageQuantity,
-    });
-  }
-
-  return groupedSales;
+export enum GroupingPeriod {
+  Weekly = 'weekly',
+  Daily = 'daily',
+  Monthly = 'monthly',
+  Yearly = 'yearly',
 }
-
-export function groupSalesByMonth(salesData: TSales[]): any {
-  const groupedSales = {
-    period: 'monthly',
+// Reusable function for grouping sales
+export function groupSales<T extends GroupingPeriod>(
+  salesData: TSales[],
+  period: T,
+): { period: T; data: Array<{ [key: string]: number }> } {
+  const groupedSales: { period: T; data: Array<{ [key: string]: number }> } = {
+    period,
     data: [],
   };
 
-  const salesByMonth = new Map<
+  const salesByPeriod = new Map<
     number,
     { totalSales: number; averageQuantity: number }
   >();
 
   for (const sale of salesData) {
-    const month = sale.dateOfSales.getMonth() + 1;
-    const monthData = salesByMonth.get(month) || {
+    const key = getGroupingKey(sale.dateOfSales, period);
+    const periodData = salesByPeriod.get(key) || {
       totalSales: 0,
       averageQuantity: 0,
     };
-    monthData.totalSales += sale.totalAmount;
-    monthData.averageQuantity += sale.quantity;
-    salesByMonth.set(month, monthData);
+    periodData.totalSales += sale.totalAmount as number;
+    periodData.averageQuantity += sale.quantity;
+    salesByPeriod.set(key, periodData);
   }
 
-  for (const [month, data] of salesByMonth.entries()) {
+  for (const [key, data] of salesByPeriod.entries()) {
     groupedSales.data.push({
-      month,
-      totalSales: data.totalSales,
-      averageQuantity: data.averageQuantity,
-    });
-  }
-
-  return groupedSales;
-}
-
-export function groupSalesByYear(salesData: TSales[]): any {
-  const groupedSales = {
-    period: 'yearly',
-    data: [],
-  };
-
-  const salesByYear = new Map<
-    number,
-    { totalSales: number; averageQuantity: number }
-  >();
-
-  for (const sale of salesData) {
-    const year = sale.dateOfSales.getFullYear();
-    const yearData = salesByYear.get(year) || {
-      totalSales: 0,
-      averageQuantity: 0,
-    };
-    yearData.totalSales += sale.totalAmount;
-    yearData.averageQuantity += sale.quantity;
-    salesByYear.set(year, yearData);
-  }
-
-  for (const [year, data] of salesByYear.entries()) {
-    groupedSales.data.push({
-      year,
+      [period]: key, // Dynamic property name based on period
       totalSales: data.totalSales,
       averageQuantity: data.averageQuantity,
     });

@@ -1,10 +1,7 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import validateRequest from '../../middlewares/validateRequest';
 import { ShoesValidation } from './validation.shoes';
 import { shoesControllers } from './controller.shoes';
-import auth from '../../middlewares/auth';
-import { upload } from '../../utils/sendImageToCloudinary';
-import { USER_ROLE } from '../user/constant.user';
 
 const router = express.Router();
 

@@ -3,7 +3,7 @@ export type TShoes = {
   productName: string;
   price: number;
   quantity: number;
-  productDescription: string;
+  productDescription?: string;
 
   brand: string;
   model: string;
