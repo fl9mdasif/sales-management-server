@@ -54,13 +54,13 @@ const createOrder = async (orderData: TSales) => {
 };
 
 // get sales history
-type TResult = {
-  week: number;
+export type TResult = {
+  period: number;
   totalSales: number;
   averageQuantity: number;
 };
 
-type TGroupedSales = {
+export type TGroupedSales = {
   period?: string;
   data: TResult[];
 };

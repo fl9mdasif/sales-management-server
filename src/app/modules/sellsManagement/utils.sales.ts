@@ -3,6 +3,7 @@
 // import { TSales } from './interface.sells';
 
 import { TSales } from './interface.sells';
+import { TResult } from './service.sells';
 
 function getWeekNumber(date: Date): number {
   const target = new Date(date.valueOf());
@@ -44,8 +45,9 @@ export enum GroupingPeriod {
 export function groupSales<T extends GroupingPeriod>(
   salesData: TSales[],
   period: T,
-): { period: T; data: Array<{ [key: string]: number }> } {
-  const groupedSales: { period: T; data: Array<{ [key: string]: number }> } = {
+): { period: T; data: TResult[] } {
+  // Adjust return type to TResult[]
+  const groupedSales: { period: T; data: TResult[] } = {
     period,
     data: [],
   };
@@ -68,7 +70,7 @@ export function groupSales<T extends GroupingPeriod>(
 
   for (const [key, data] of salesByPeriod.entries()) {
     groupedSales.data.push({
-      [period]: key, // Dynamic property name based on period
+      period: key, // Explicitly add the "period" property
       totalSales: data.totalSales,
       averageQuantity: data.averageQuantity,
     });
