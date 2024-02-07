@@ -14,6 +14,7 @@ app.use(
   cors({
     origin: 'https://sales-management-client-lake.vercel.app', // Update with the actual origin of your frontend
     credentials: true,
+    methods:["GET","POST","PUT","DELETE","PATCH"]
   }),
 );
 
