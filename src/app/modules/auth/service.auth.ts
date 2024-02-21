@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
 import { User } from '../user/mode.user';
 import { TLoginUser } from './interface.auth';
@@ -26,7 +27,7 @@ const loginUser = async (payload: TLoginUser) => {
   // console.log(user);
 
   // 3. create token and sent to the client
-  const jwtPayload = {
+  const jwtPayload: any = {
     _id: user?._id as string,
     username: user.username,
     email: user.email,
@@ -132,7 +133,7 @@ const refreshToken = async (token: string) => {
     throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized !');
   }
 
-  const jwtPayload = {
+  const jwtPayload: any = {
     username: user.username,
     role: user.role,
   };
