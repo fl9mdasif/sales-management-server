@@ -4,15 +4,13 @@ import { userControllers } from '../user/controller.user';
 import { userZodValidationSchema } from '../user/validation.user';
 import { authValidations } from './validation.auth';
 import { authControllers } from './controller.auth';
-import auth from '../../middlewares/auth';
-import { USER_ROLE } from '../user/constant.user';
 
 const router = express.Router();
 
 // register a user
 router.post(
   '/register',
-  // auth('admin'),
+
   validateRequest(userZodValidationSchema.userRegistrationValidation),
   userControllers.registerUser,
 );
@@ -27,15 +25,10 @@ router.post(
 // change password
 router.post(
   '/change-password',
-  auth(USER_ROLE.user),
   validateRequest(authValidations.changePasswordValidationSchema),
   authControllers.changePassword,
 );
 
 // refresh token
-router.post(
-  '/refresh-token',
-  // validateRequest(authValidations.refreshTokenValidationSchema),
-  authControllers.refreshToken,
-);
+router.post('/refresh-token', authControllers.refreshToken);
 export const authRoute = router;

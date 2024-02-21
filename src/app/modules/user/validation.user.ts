@@ -5,7 +5,7 @@ const userRegistrationValidation = z.object({
     username: z.string().min(1).max(50),
     email: z.string().email(),
     password: z.string().min(5),
-    role: z.string().min(1),
+    role: z.enum(['seller', 'buyer', 'superAdmin']),
   }),
 });
 
