@@ -29,4 +29,6 @@ router.put(
   shoesControllers.updateShoe,
 );
 
+router.get('/verify/:shoeId', shoesControllers.verifyProduct);
+
 export const shoesRoute = router;

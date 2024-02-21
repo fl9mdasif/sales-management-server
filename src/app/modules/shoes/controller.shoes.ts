@@ -77,7 +77,7 @@ const getSingleShoe = catchAsync(async (req, res) => {
   });
 });
 
-// update course
+// update
 const updateShoe = catchAsync(async (req, res) => {
   const { shoeId } = req.params;
   // console.log(shoeId);
@@ -94,10 +94,25 @@ const updateShoe = catchAsync(async (req, res) => {
   });
 });
 
+// verify
+const verifyProduct = catchAsync(async (req, res) => {
+  const { shoeId } = req.params;
+
+  const result = await ShoesServices.verifyProduct(shoeId);
+  // console.log(result);
+  response.createSendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Product Verified successfully',
+    data: result,
+  });
+});
+
 export const shoesControllers = {
   createShoes,
   getAllShoes,
   deleteShoe,
   getSingleShoe,
   updateShoe,
+  verifyProduct,
 };

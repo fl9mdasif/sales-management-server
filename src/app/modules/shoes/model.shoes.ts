@@ -3,12 +3,8 @@ import { TShoes } from './interface.shoes';
 
 const shoesSchema = new Schema<TShoes>(
   {
-    // id:{
-    //   type:String
-    // },
     productName: {
       type: String,
-      // unique: true,
       required: true,
     },
 

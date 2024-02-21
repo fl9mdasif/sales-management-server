@@ -98,10 +98,9 @@ const deleteShoe = async (ids: string[]) => {
   return deleteShoe;
 };
 
-// update course
+// update
 const updateShoe = async (id: string, updatedData: Partial<TShoes>) => {
   // console.log(id);
-  // console.log(courseRemainingData);
 
   // Basic update primitive fields
   const updatedBasicShoeInfo = await Shoes.findOneAndUpdate(
@@ -115,20 +114,33 @@ const updateShoe = async (id: string, updatedData: Partial<TShoes>) => {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       'Failed to update basic product',
-      '',
+      'shoe update',
     );
   }
 
   const result = await Shoes.findById({ _id: id });
-  // console.log('update', updateShoe);
-  // console.log('object', result);
+
   return result;
 };
 
+// verifyProduct
+const verifyProduct = async (id: string) => {
+  const verifyShoe = await Shoes.findById({ _id: id });
+  if (!verifyShoe) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Product is not valid',
+      'verify pd',
+    );
+  } else {
+    return verifyShoe;
+  }
+};
 export const ShoesServices = {
   createShoes,
   getAllShoes,
   deleteShoe,
   getSingleShoe,
   updateShoe,
+  verifyProduct,
 };
