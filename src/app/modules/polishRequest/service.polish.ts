@@ -9,8 +9,8 @@ const createPolishRequest = async (data: TPolish) => {
 };
 
 // getSingle shoe
-const getPolishRequestStatus = async (id: string) => {
-  const singleShoe = await ShoePolish.findById({ _id: id });
+const getPolishRequestStatus = async () => {
+  const singleShoe = await ShoePolish.find();
 
   return singleShoe;
 };

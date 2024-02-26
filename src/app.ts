@@ -10,11 +10,13 @@ const app: Application = express();
 
 // parser middleware
 app.use(express.json());
+// app.use(cors());
+// origin: 'http://localhost:5173', // Update with the actual origin of your frontend
 app.use(
   cors({
     origin: 'https://sales-management-client-lake.vercel.app', // Update with the actual origin of your frontend
     credentials: true,
-    methods:["GET","POST","PUT","DELETE","PATCH"]
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   }),
 );
 

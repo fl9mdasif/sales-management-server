@@ -4,7 +4,7 @@ export const createPolishValidationSchema = z.object({
   body: z.object({
     userId: z.string(),
     polishType: z.enum(['cream', 'wax', 'liquid']),
-    shineLevel: z.enum(['matte', 'glossy', 'high-glossy']),
+    shineLevel: z.enum(['matte', 'gloss', 'high-gloss']),
     instructions: z.string().optional(),
     status: z.enum(['pending', 'in-progress', 'completed']),
   }),

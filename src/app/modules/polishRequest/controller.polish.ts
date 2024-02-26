@@ -18,9 +18,9 @@ const createPolishRequest: RequestHandler = async (req, res) => {
 
 // get all course
 const getPolishRequestStatus = catchAsync(async (req, res) => {
-  const { polishId } = req.params;
+  // const { polishId } = req.params;
 
-  const result = await polishServices.getPolishRequestStatus(polishId);
+  const result = await polishServices.getPolishRequestStatus();
 
   response.createSendResponse(res, {
     statusCode: httpStatus.OK,

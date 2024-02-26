@@ -136,6 +136,7 @@ const verifyProduct = async (id: string) => {
     return verifyShoe;
   }
 };
+
 export const ShoesServices = {
   createShoes,
   getAllShoes,

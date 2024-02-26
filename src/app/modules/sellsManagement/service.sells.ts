@@ -64,46 +64,6 @@ export type TGroupedSales = {
   period?: string;
   data: TResult[];
 };
-// export async function getSalesHistory(timeInterval: string): Promise<any> {
-//   const salesData: TSales[] = await Sales.find();
-
-//   const groupedSales: TGroupedSales[] = [];
-//   //   console.log(groupedSales);
-
-//   //   console.log(groupSalesByWeek(salesData));
-
-//   switch (timeInterval) {
-//     case 'weekly':
-//       groupedSales.push({
-//         period: 'weekly',
-//         data: groupSalesByWeek(salesData).data,
-//       });
-//       break;
-//     case 'daily':
-//       groupSales(salesData, 'daily');
-//       // groupedSales.push({
-//       //   period: 'daily',
-//       //   data: groupSalesByDay(salesData).data,
-//       // });
-//       break;
-//     case 'monthly':
-//       groupedSales.push({
-//         period: 'monthly',
-//         data: groupSalesByMonth(salesData).data,
-//       });
-//       break;
-//     case 'yearly':
-//       groupedSales.push({
-//         period: 'yearly',
-//         data: groupSalesByYear(salesData).data,
-//       });
-//       break;
-//     default:
-//       return salesData;
-//   }
-
-//   return groupedSales;
-// }
 
 async function getSalesHistory(timeInterval: string): Promise<TGroupedSales[]> {
   const salesData: TSales[] = await Sales.find();
